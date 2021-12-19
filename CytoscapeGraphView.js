@@ -1,5 +1,6 @@
 const urlParams = new URLSearchParams(window.location.search);
-var layout = urlParams.get('layout') || 'cose'
+var layouts = ['cose', 'cose', 'circle', 'concentric', 'random', 'random']
+var layout = urlParams.get('layout') || randItem(layouts)
 var n = urlParams.get('n') || 10
 var maxx = 100
 var points = RandPoints(n, maxx, maxx, 0, 0)
@@ -57,7 +58,12 @@ var cy = cytoscape({
     },
 });
 
-var colors = ["#22577A", "#38A3A5", "#57CC99", "#80ED99"]
+var colorsPalletes = [
+  ["#22577A", "#38A3A5", "#57CC99", "#80ED99"],
+  ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51"],
+  ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8","#48cae4","#90e0ef","#ade8f4", "#caf0f8"]
+]
+var colors = randItem(colorsPalletes)
 for (const vertex of vertices) {
   var color = randItem(colors)
   cy.style().selector(select(vertex.data.id)).style({
