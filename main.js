@@ -1,3 +1,4 @@
+var Voronoi = require('voronoi')
 const urlParams = new URLSearchParams(window.location.search);
 var layouts = ['cose', 'cose', 'circle', 'concentric', 'random', 'random']
 var layout = urlParams.get('layout') || randItem(layouts)
