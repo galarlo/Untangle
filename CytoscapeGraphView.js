@@ -1,4 +1,6 @@
-var n = 3
+const urlParams = new URLSearchParams(window.location.search);
+var layout = urlParams.get('layout') || 'cose'
+var n = urlParams.get('n') || 10
 var maxx = 100
 var points = RandPoints(n, maxx, maxx, 0, 0)
 var bbox = { xl: 0, xr: maxx, yt: 0, yb: maxx };
@@ -12,7 +14,7 @@ var vas = diagram.edges.map(edge => {
     data: {
       id: edge.va.x + edge.va.y + "", 
       x: edge.va.x,
-      y: edge.va.y
+      y: edge.va.y,
     }
   }
 });
@@ -22,7 +24,7 @@ var vbs = diagram.edges.map(edge => {
     data: {
       id: edge.vb.x + edge.vb.y + "",
       x: edge.vb.x,
-      y: edge.vb.y
+      y: edge.vb.y,
     }
   }
 });
@@ -50,23 +52,29 @@ var cy = cytoscape({
       edges: edges
     },
   
-    // layout: {
-    //   name: 'grid',
-    //   rows: 1
-    // },
-  
-    // so we can see the ids
-    // style: [
-    //   {
-    //     selector: 'node',
-    //     style: {
-    //       'label': 'data(id)'
-    //     }
-    //   }
-    // ]
+    layout: {
+      name: layout,
+    },
 });
 
-console.log(cy.data)
+var colors = ["#22577A", "#38A3A5", "#57CC99", "#80ED99"]
+for (const vertex of vertices) {
+  var color = randItem(colors)
+  cy.style().selector(select(vertex.data.id)).style({
+    'background-fill': 'radial-gradient',
+    'background-gradient-stop-colors': color + " " + shadeColor(color, -10) + " " + shadeColor(color, -50),
+    // 'background-gradient-stop-positions': '0% 95%'
+  }).update()
+}
+
+cy.style().selector("edge").style({
+  'line-fill': 'linear-gradient',
+  'line-gradient-stop-colors': edge =>
+  {
+    return getColor(edge.data().source) + " " + getColor(edge.data().target)
+  }
+}).update()
+console.log(cy.style().json())
 
 cy.on('dragfreeon', 'node', e => {
   if (isWin())
@@ -93,4 +101,12 @@ function isWin()
     }
   }
   return true
+}
+
+function getColor(nodeId)
+{
+  var nodecolors = cy.$(select(nodeId)).style('background-gradient-stop-colors').split(' ')
+  var lastColor = nodecolors[1]
+  console.log(lastColor)
+  return lastColor
 }
