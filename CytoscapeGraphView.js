@@ -1,6 +1,6 @@
-var n = 10
+var n = 3
 var maxx = 100
-var points = RandPoints(10, maxx, maxx, 0, 0)
+var points = RandPoints(n, maxx, maxx, 0, 0)
 var bbox = { xl: 0, xr: maxx, yt: 0, yb: maxx };
 
 const voronoi = new Voronoi();
@@ -42,7 +42,7 @@ var edges = diagram.edges.map(edge => {
 console.log(edges)
 
 var container = document.getElementById('cy')
-cytoscape({
+var cy = cytoscape({
     container,
   
     elements: {
@@ -64,5 +64,33 @@ cytoscape({
     //     }
     //   }
     // ]
-  });
-  
+});
+
+console.log(cy.data)
+
+cy.on('dragfreeon', 'node', e => {
+  if (isWin())
+  {
+    alert("you won!!")
+  }
+})
+
+function isWin()
+{
+  var edges = cy.edges()
+  for (const edge1 of edges) {
+    var a1 = cy.nodes("[id = \"" + edge1.data().source.replace('.', '\.') + "\"]").renderedPosition()
+    var b1 = cy.nodes("[id = \"" + edge1.data().target.replace('.', '\.') + "\"]").renderedPosition()
+    for (const edge2 of edges) {
+      if (edge1 == edge2) continue
+      
+      var a2 = cy.nodes("[id = \"" + edge2.data().source.replace('.', '\.') + "\"]").renderedPosition()
+      var b2 = cy.nodes("[id = \"" + edge2.data().target.replace('.', '\.') + "\"]").renderedPosition()
+      if (intersect(a1.x, a1.y, b1.x, b1.y, a2.x, a2.y, b2.x, b2.y) != false)
+      {
+        return false
+      }
+    }
+  }
+  return true
+}
